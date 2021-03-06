@@ -3,14 +3,18 @@ import gallery from "./gallery-items.js";
 
 const galleryListRef = document.querySelector('.js-gallery');
 const lightBoxRef = document.querySelector('.js-lightbox');
-const galleryMarkup = gallery.map(makeGaleryMarkup).join('');
 const imgRef = document.querySelector('.lightbox__image');
+const galleryMarkup = gallery.map(makeGaleryMarkup).join('');
 
+const arrayOfAlts = gallery.map(elm => {
+  return elm.description
+})
 
-galleryListRef.addEventListener('click', onPhotoClick);
 galleryListRef.insertAdjacentHTML('afterbegin', galleryMarkup);
+galleryListRef.addEventListener('click', onPhotoClick);
 lightBoxRef.addEventListener('click', onCloseBtnClick);
-window.addEventListener('keydown', onEscPress);
+window.addEventListener('keydown', onKeyPress);
+
 
 
 function makeGaleryMarkup (image) {
@@ -29,7 +33,7 @@ function makeGaleryMarkup (image) {
   </a>
 </li>`;
 };
-  
+
 function onPhotoClick(event) {
   if (event.target.nodeName !== 'IMG') {
     return;
@@ -38,8 +42,8 @@ function onPhotoClick(event) {
   lightBoxRef.classList.add('is-open');
   imgRef.setAttribute('src', event.target.dataset.source);
   imgRef.setAttribute('alt', event.target.getAttribute('alt'));
-}
-  
+};
+
 function onCloseBtnClick(event) {
   if (event.target.nodeName === 'IMG') {
     return;
@@ -48,13 +52,40 @@ function onCloseBtnClick(event) {
   imgRef.setAttribute('src', '');
   imgRef.setAttribute('alt', '');
 };
-function onEscPress(event) {
+
+function onKeyPress(event) {
   if (event.code === 'Escape') {
-      lightBoxRef.classList.remove('is-open');
-  imgRef.setAttribute('src', '');
-  imgRef.setAttribute('alt', '');
-  };
-  
+    lightBoxRef.classList.remove('is-open');
+    imgRef.setAttribute('src', '');
+    imgRef.setAttribute('alt', '');
+  }
+
+  else if (event.code === 'ArrowRight') {
+    const currentImg = imgRef.getAttribute('alt');
+    let index = arrayOfAlts.indexOf(currentImg);
+
+    if (index >= arrayOfAlts.length - 1) {
+    return  index = arrayOfAlts.length - 1;
+    };
+    const newSrc = gallery[index + 1].original;
+    const newAlt = gallery[index + 1].description;
+
+    imgRef.setAttribute('src', newSrc);
+    imgRef.setAttribute('alt', newAlt);
+  }
+    
+  else if (event.code === 'ArrowLeft') {
+    const currentImg = imgRef.getAttribute('alt');
+    let index = arrayOfAlts.indexOf(currentImg);
+    if (index <= 0) {
+    return  index = 0;
+    };
+    const newSrc = gallery[index - 1].original;
+    const newAlt = gallery[index - 1].description;
+
+    imgRef.setAttribute('src', newSrc);
+    imgRef.setAttribute('alt', newAlt);
+ }
 };
 
 
